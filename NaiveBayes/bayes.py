@@ -1,5 +1,6 @@
 import sys, getopt
 import re
+import pickle
 from sets import Set
 from os import listdir
 from os.path import isfile, join
@@ -77,6 +78,20 @@ class Bayes(object):
         count = tk.pos_appear + tk.neg_appear
         return (appear + 1) / float(count)
 
+    def train(self, pos_dir, neg_dir):
+        pos_files = [f for f in listdir(pos_dir) if isfile(join(pos_dir, f))]
+        for f in pos_files:
+            pos_file = open(join(pos_dir, f))
+            payload = pos_file.read()
+            self.train_on_text(clean_text(payload), True)
+
+        neg_files = [f for f in listdir(neg_dir) if isfile(join(neg_dir, f))]
+        for f in neg_files:
+            neg_file = open(join(neg_dir, f))
+            payload = neg_file.read()
+            self.train_on_text(clean_text(payload), False)
+    
+
 
 class Token(object):
     def __init__(self, tk):
@@ -122,18 +137,9 @@ if __name__ == '__main__':
         sys.exit()
 
     if mode == "train":
-        pos_files = [f for f in listdir(pos_dir) if isfile(join(pos_dir, f))]
+        b.train(pos_dir, neg_dir)
 
-        for f in pos_files:
-            pos_file = open(join(pos_dir, f))
-            payload = pos_file.read()
-            b.train_on_text(clean_text(payload), True)
 
-        neg_files = [f for f in listdir(neg_dir) if isfile(join(neg_dir, f))]
-        for f in neg_files:
-            neg_file = open(join(neg_dir, f))
-            payload = neg_file.read()
-            b.train_on_text(clean_text(payload), False)
 
         # print 'is pos w/ probability', b.classify_text(clean_text("I do not love this great movie"))
         # print 'is pos w/ probability', b.classify_text(clean_text("this is a really bad movie"))
