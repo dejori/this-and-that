@@ -97,7 +97,16 @@ class Bayes(object):
             else:
                 fp +=1
 
+        print "--------------------"
+        print "\t\tpred pos\tpred neg"
+        print "true pos\t%s\t\t%s" % (tp,fn)
+        print "true neg\t%s\t\t%s" % (fp,tn)
+        print "--------------------"
+
+
         print "accuracy %0.2f" % (float(tp+tn)/float(tp+tn+fp+fn))
+
+
 
     # returns most likely klass label
     def classify_text(self, words):
@@ -110,7 +119,6 @@ class Bayes(object):
         # multiply by klass prior
         p_pos *= self._get_p('pos')
         p_neg *= self._get_p('neg')
-
         if p_pos > p_neg:
             return 'pos'
         else:
@@ -158,11 +166,16 @@ if __name__ == '__main__':
         sys.exit()
 
     if mode == "train":
+        print "training ..."
         b = Bayes()
         b.train(pos_dir, neg_dir)
         pickle.dump(b, open("model.p", "wb"))
     elif mode == "test":
+        print "testing ..."
         b = pickle.load( open("model.p", "rb"))
         b.test(pos_dir, neg_dir)
         # print 'is pos w/ probability', b.classify_text(clean_text("I do love this great movie"))
         # print 'is pos w/ probability', b.classify_text(clean_text("I do not like this movie"))
+    else:
+        print "mode unknown"
+        sys.exit(2)
