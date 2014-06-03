@@ -48,23 +48,6 @@ class Bayes(object):
         else: # word not seen before
             return 0.5
 
-    # returns most likely klass label
-    def classify_text(self, words):
-        p_pos = 1
-        p_neg = 1
-        for word in words:
-            p_pos *= self._score_token(word, 'pos')
-            p_neg *= self._score_token(word, 'neg')
-
-        # multiply by klass prior
-        p_pos *= self._get_p('pos')
-        p_neg *= self._get_p('neg')
-
-        if p_pos > p_neg:
-            return 'pos'
-        else:
-            return 'neg'
-
     def _p_token_given(self, token, klass):
         tk = self.tokens[token]
 
@@ -90,7 +73,48 @@ class Bayes(object):
             neg_file = open(join(neg_dir, f))
             payload = neg_file.read()
             self.train_on_text(clean_text(payload), False)
-    
+
+    def test(self, pos_dir, neg_dir):
+        tp = 0
+        fp = 0
+        tn = 0
+        fn = 0
+        pos_files = [f for f in listdir(pos_dir) if isfile(join(pos_dir, f))]
+        for f in pos_files:
+            pos_file = open(join(pos_dir, f))
+            klass = self.classify_text(clean_text(pos_file.read()))
+            if klass == 'pos':
+                tp +=1
+            else:
+                fn +=1
+
+        neg_files = [f for f in listdir(neg_dir) if isfile(join(neg_dir, f))]
+        for f in neg_files:
+            neg_file = open(join(neg_dir, f))
+            klass = self.classify_text(clean_text(neg_file.read()))
+            if klass == 'neg':
+                tn +=1
+            else:
+                fp +=1
+
+        print "accuracy %0.2f" % (float(tp+tn)/float(tp+tn+fp+fn))
+
+    # returns most likely klass label
+    def classify_text(self, words):
+        p_pos = 1
+        p_neg = 1
+        for word in words:
+            p_pos *= self._score_token(word, 'pos')
+            p_neg *= self._score_token(word, 'neg')
+
+        # multiply by klass prior
+        p_pos *= self._get_p('pos')
+        p_neg *= self._get_p('neg')
+
+        if p_pos > p_neg:
+            return 'pos'
+        else:
+            return 'neg'
 
 
 class Token(object):
@@ -129,17 +153,16 @@ if __name__ == '__main__':
             pos_dir = arg
         elif opt in ("-n", "--negdir"):
             neg_dir = arg
-
-    b = Bayes()
-
     if not mode:
         print 'bayes.py -m <mode> -p <posdir> -n <negdir>'
         sys.exit()
 
     if mode == "train":
+        b = Bayes()
         b.train(pos_dir, neg_dir)
-
-
-
-        # print 'is pos w/ probability', b.classify_text(clean_text("I do not love this great movie"))
-        # print 'is pos w/ probability', b.classify_text(clean_text("this is a really bad movie"))
+        pickle.dump(b, open("model.p", "wb"))
+    elif mode == "test":
+        b = pickle.load( open("model.p", "rb"))
+        b.test(pos_dir, neg_dir)
+        # print 'is pos w/ probability', b.classify_text(clean_text("I do love this great movie"))
+        # print 'is pos w/ probability', b.classify_text(clean_text("I do not like this movie"))
