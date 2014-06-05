@@ -4,7 +4,7 @@ from SpamData import SpamData
 import export
 
 
-
+# dot -Tpdf spam.dot -o spam.pdf
 
 class SpamClassifier:
 

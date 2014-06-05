@@ -21,7 +21,7 @@ class SpamData:
 
     def _getfeature_names(self):
         feature_names = []
-        with open('./data/spambase.names.txt') as f:
+        with open('./data/spambase.names') as f:
             content = f.readlines()
             for line in content:
                 line = line.strip()
