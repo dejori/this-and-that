@@ -106,8 +106,6 @@ class Bayes(object):
 
         print "accuracy %0.2f" % (float(tp+tn)/float(tp+tn+fp+fn))
 
-
-
     # returns most likely klass label
     def classify_text(self, words):
         p_pos = 1
