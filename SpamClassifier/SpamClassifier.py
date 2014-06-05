@@ -9,18 +9,18 @@ import export
 class SpamClassifier:
 
     def train(self):
-        data = SpamData().load()
+        spamdata = SpamData()
         model = tree.DecisionTreeClassifier(min_samples_leaf=100)
-        model = model.fit(data['data'], data['target'])
+        model = model.fit(spamdata.data['data'], spamdata.data['target'])
 
         with open("spam.dot", 'w') as f:
-            f = export.export_graphviz(model, out_file=f,feature_names=data['feature_names'], target_names=data['target_names'])
+            f = export.export_graphviz(model, out_file=f,feature_names=spamdata.data['feature_names'], target_names=spamdata.data['target_names'])
 
         return model
 
     def test(self,clf):
-        data = SpamData().load()
-        print "Accuracy: %0.3f" % clf.score(data['data'],data['target'])
+        spamdata = SpamData()
+        print "Accuracy: %0.3f" % clf.score(spamdata.data['data'],spamdata.data['target'])
 
 
 
