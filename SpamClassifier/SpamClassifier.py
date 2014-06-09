@@ -1,29 +1,40 @@
-from sklearn.datasets import load_iris
+import StringIO
 from sklearn import tree
 from SpamData import SpamData
 import export
+import pydot
 
 
 # dot -Tpdf spam.dot -o spam.pdf
 
 class SpamClassifier:
 
+
+
+
     def train(self):
-        spamdata = SpamData()
         model = tree.DecisionTreeClassifier(min_samples_leaf=100)
-        model = model.fit(spamdata.data['data'], spamdata.data['target'])
+        data = SpamData()
+        model.fit(data.data, data.target)
 
-        with open("spam.dot", 'w') as f:
-            f = export.export_graphviz(model, out_file=f,feature_names=spamdata.data['feature_names'], target_names=spamdata.data['target_names'])
-
+        self.__save(model, data)
         return model
 
-    def test(self,clf):
-        spamdata = SpamData()
-        print "Accuracy: %0.3f" % clf.score(spamdata.data['data'],spamdata.data['target'])
+
+    def __save(self, model, data):
+        dot_data = StringIO.StringIO()
+        export.export_graphviz(model, out_file=dot_data, feature_names=data.feature_names, target_names=data.target_names)
+        graph = pydot.graph_from_dot_data(dot_data.getvalue())
+        graph.write_png("spam.png")
+
+    def test(self, clf):
+        data = SpamData()
+        print "Accuracy: %0.3f" % clf.score(data.data, data.target)
 
 
 
 if __name__ == '__main__':
+
     model = SpamClassifier().train()
+
     SpamClassifier().test(model)

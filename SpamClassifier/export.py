@@ -67,10 +67,10 @@ def export_graphviz(decision_tree, out_file="tree.dot", feature_names=None, targ
             value = value[0, :]
 
         if tree.children_left[node_id] == _tree.TREE_LEAF:
-            return "%s = %.4f\\nsamples = %s\\nvalue = %s\nclass = %s" \
+            return "%s = %.4f\\nvalue = %s\nclass = %s" \
                    % (criterion,
                       tree.impurity[node_id],
-                      tree.n_node_samples[node_id],
+                      # tree.n_node_samples[node_id],
                       value, target_names[value.argmax()])
         else:
             if feature_names is not None:
@@ -86,6 +86,7 @@ def export_graphviz(decision_tree, out_file="tree.dot", feature_names=None, targ
                       tree.n_node_samples[node_id])
 
     def recurse(tree, node_id, criterion, parent=None, depth=0):
+        node_bgcolor = ["green","orange"]
         if node_id == _tree.TREE_LEAF:
             raise ValueError("Invalid node_id %s" % _tree.TREE_LEAF)
 
@@ -94,7 +95,17 @@ def export_graphviz(decision_tree, out_file="tree.dot", feature_names=None, targ
 
         # Add node with description
         if max_depth is None or depth <= max_depth:
-            out_file.write('%d [label="%s", shape="box"] ;\n' %
+            if tree.children_left[node_id] == _tree.TREE_LEAF:
+
+                value = tree.value[node_id]
+                if tree.n_outputs == 1:
+                    value = value[0, :]
+
+
+                out_file.write('%d [label="%s", shape="box", style="filled", fillcolor="%s"] ;\n' %
+                           (node_id, node_to_str(tree, node_id, criterion), node_bgcolor[value.argmax()]))
+            else:
+                out_file.write('%d [label="%s", shape="box", style="rounded"] ;\n' %
                            (node_id, node_to_str(tree, node_id, criterion)))
 
             if parent is not None:
