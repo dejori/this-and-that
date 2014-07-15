@@ -1,3 +1,3 @@
-Machine Learning in Action as iPython Notebook
+# Machine Learning in Action as iPython Notebook
 
 ipython notebook
