@@ -1,3 +1,3 @@
 # Machine Learning in Action as iPython Notebook
 
-ipython notebook
+ipython notebook --pylab=inline
