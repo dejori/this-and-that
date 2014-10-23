@@ -1,15 +1,27 @@
 # -*- coding: UTF-8 -*-
 import sys
 import math
+import pandas as pd
 from csv import DictReader
 
 
-class DataStats:
+
+class FeatureStats:
     def __init__(self):
         pass
 
     @staticmethod
-    def plot_stats(loc_csv):
+    def feature_names(loc_csv):
+        features_names = []
+        # instantiate a feature for each column except Id and Label
+        for row in DictReader(open(loc_csv)):
+            for k, v in row.items():
+                if k in ["Id", "Label"]: continue
+                features_names.append(k)
+            return features_names
+
+    @staticmethod
+    def calculate_stats(loc_csv):
         features = {}
         # instantiate a feature for each column except Id and Label
         for row in DictReader(open(loc_csv)):
@@ -61,6 +73,22 @@ class DataStats:
             features[k].calculate_std()
 
         return features
+
+    @staticmethod
+    def get_column(loc_csv, column_name):
+         # calculate min max mean
+        data = []
+        for idx, row in enumerate(DictReader(open(loc_csv))):
+            v = row[column_name]
+            if v:
+                data.append(int(v))
+            # else:
+            #     data.append(None)
+            #Reporting progress
+            if idx and not idx % 1000000:
+                print("%d analyzed" % idx)
+                # return pd.Series(data)
+        return pd.Series(data)
 
 
 class Feature:
