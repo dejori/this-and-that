@@ -67,7 +67,7 @@ def export_graphviz(decision_tree, out_file="tree.dot", feature_names=None, targ
             value = value[0, :]
 
         if tree.children_left[node_id] == _tree.TREE_LEAF:
-            return "%s = %.4f\\nvalue = %s\nclass = %s" \
+            return "%s = %.4f \\n value = %s \\n class = %s" \
                    % (criterion,
                       tree.impurity[node_id],
                       # tree.n_node_samples[node_id],
@@ -78,7 +78,7 @@ def export_graphviz(decision_tree, out_file="tree.dot", feature_names=None, targ
             else:
                 feature = "X[%s]" % tree.feature[node_id]
 
-            return "%s <= %.4f\\n%s = %s\\nsamples = %s" \
+            return "%s <= %.4f \\n %s = %s \\n samples = %s" \
                    % (feature,
                       tree.threshold[node_id],
                       criterion,
@@ -86,7 +86,7 @@ def export_graphviz(decision_tree, out_file="tree.dot", feature_names=None, targ
                       tree.n_node_samples[node_id])
 
     def recurse(tree, node_id, criterion, parent=None, depth=0):
-        node_bgcolor = ["green","orange"]
+        node_bgcolor = ["green", "orange"]
         if node_id == _tree.TREE_LEAF:
             raise ValueError("Invalid node_id %s" % _tree.TREE_LEAF)
 
@@ -102,10 +102,10 @@ def export_graphviz(decision_tree, out_file="tree.dot", feature_names=None, targ
                     value = value[0, :]
 
 
-                out_file.write('%d [label="%s", shape="box", style="filled", fillcolor="%s"] ;\n' %
+                out_file.write('%d [label=\"%s\", shape=\"box\", style=\"filled\", fillcolor=\"%s\"] ;\n' %
                            (node_id, node_to_str(tree, node_id, criterion), node_bgcolor[value.argmax()]))
             else:
-                out_file.write('%d [label="%s", shape="box", style="rounded"] ;\n' %
+                out_file.write('%d [label=\"%s\", shape=\"box\", style=\"rounded\"] ;\n' %
                            (node_id, node_to_str(tree, node_id, criterion)))
 
             if parent is not None:
